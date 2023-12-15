@@ -9,7 +9,9 @@ const placesList = document.querySelector('.places__list');
 function createCard(card, removeCardHandler) {
   const cardContentClone = cardContent.cloneNode(true);
   cardContentClone.querySelector('.card__title').textContent = card.name;
-  cardContentClone.querySelector('.card__image').src = card.link;
+  cardContentClone.querySelector(
+    '.card__image',
+  ).src = `<%=require("${card.link}")%>`;
   cardContentClone.querySelector(
     '.card__image',
   ).alt = `Фотография местности ${card.name}`;
