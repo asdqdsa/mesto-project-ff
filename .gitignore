@@ -1,0 +1,13 @@
+# .gitignore
+# package.json
+# package-lock.json
+dist
+node_modules
+.htmlhintrc
+.prettierrc
+.prettierrc.json
+.stylelintignore
+.prettierignore
+.stylelintrc
+.stylelintrc.json
+.vscode
