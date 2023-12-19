@@ -1,4 +1,5 @@
-import { initialCards } from './cards.js';
+import { initialCards } from '../components/cards.js';
+import { toggleModal } from '../components/modal.js';
 
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
@@ -32,3 +33,12 @@ function removeCard(event) {
 initialCards.forEach((card) => {
   placesList.append(createCard(card, removeCard));
 });
+
+// popup
+
+const profileSection = document.querySelector('.profile');
+const profileImage = document.querySelector('.profile__image');
+const profileEditButton = document.querySelector('.profile__edit-button');
+const profileAddButton = document.querySelector('.profile__add-button');
+
+profileSection.addEventListener('click', toggleModal);
