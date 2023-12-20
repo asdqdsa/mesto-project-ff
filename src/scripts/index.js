@@ -1,10 +1,11 @@
 import {
-  initialCards,
   createCard,
   removeCard,
   likeCard,
   showCardImage,
-} from '../components/cards';
+} from '../components/card';
+
+import { initialCards } from '../components/cards';
 
 import {
   openModal,

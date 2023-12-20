@@ -1,10 +1,6 @@
-import {
-  initialCards,
-  createCard,
-  removeCard,
-  likeCard,
-  showCardImage,
-} from './cards';
+import { initialCards } from './cards';
+
+import { createCard, removeCard, likeCard, showCardImage } from './card';
 
 import {
   profileTitle,
