@@ -1,3 +1,9 @@
+import {
+  popupImageFrame,
+  popupImageCaption,
+  popupTypeImage,
+} from '../scripts/index';
+
 export const initialCards = [
   {
     name: 'Архыз',
@@ -58,15 +64,9 @@ export function createCard(
 }
 
 // handle show cards photo
-const popupTypeImage = document.querySelector('.popup_type_image');
-const popupImageFrame = document.querySelector('.popup__image');
-const popupImageCaption = document.querySelector('.popup__caption');
-const popupImageCloseBtn = document.querySelector('.popup__close');
 export function showCardImage(evt) {
   popupTypeImage.classList.toggle('popup_is-opened');
-
   popupImageFrame.src = evt.target.src;
-  console.log(evt.currentTarget.parentNode);
   popupImageCaption.textContent =
     evt.currentTarget.parentNode.querySelector(
       '.card__description',
