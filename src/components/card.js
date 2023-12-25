@@ -1,9 +1,3 @@
-import {
-  popupImageFrame,
-  popupImageCaption,
-  popupTypeImage,
-} from '../scripts/index';
-
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
 const cardContent = cardTemplate.content;
@@ -31,19 +25,11 @@ export function createCard(
 
   cardContentClone
     .querySelector('.card__image')
-    .addEventListener('click', (evt) => showCardImageHandler(evt));
+    .addEventListener('click', () =>
+      showCardImageHandler(card.name, card.link),
+    );
 
   return cardContentClone;
-}
-
-// handle show cards photo
-export function showCardImage(evt) {
-  popupTypeImage.classList.toggle('popup_is-opened');
-  popupImageFrame.src = evt.target.src;
-  popupImageCaption.textContent =
-    evt.currentTarget.parentNode.querySelector(
-      '.card__description',
-    ).textContent;
 }
 
 // handle liking card
