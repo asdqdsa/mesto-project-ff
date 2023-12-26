@@ -5,15 +5,7 @@ export function openModal(styleClass, modalNode, onKeyDownHandler) {
 }
 
 // close modal
-export function closeModal(
-  styleClass,
-  modalNode,
-  onKeyDownHandler,
-  closeBtnNode,
-  evt,
-) {
-  if (evt.target === evt.currentTarget || evt.target === closeBtnNode) {
-    modalNode.classList.remove(styleClass);
-    document.removeEventListener('keydown', onKeyDownHandler);
-  }
+export function closeModal(styleClass, modalNode, onKeyDownHandler) {
+  modalNode.classList.remove(styleClass);
+  document.removeEventListener('keydown', onKeyDownHandler);
 }

@@ -1,4 +1,4 @@
-import '../pages/index.css';
+import './index.css';
 import { createCard, removeCard, likeCard } from '../components/card';
 import { initialCards } from '../components/cards';
 import { openModal, closeModal } from '../components/modal';
@@ -72,13 +72,10 @@ function showCardImage(name, link) {
   popupImageFrame.alt = `Фотография местности ${name}`;
   popupImageCaption.textContent = name;
   popupTypeImage.addEventListener('click', (evt) => {
-    closeModal(
-      activeModalStyle,
-      popupTypeImage,
-      onKeyDown,
-      popupImageCloseBtn,
-      evt,
-    );
+    const isNotModalElement = isOverlay(evt, popupImageCloseBtn);
+    if (isNotModalElement) {
+      closeModal(activeModalStyle, popupTypeImage, onKeyDown);
+    }
   });
 }
 
@@ -103,8 +100,8 @@ async function addPlace(name, link) {
 
 // URL fetch
 function loadURL(url, urlError) {
-  return new Promise(async function (resolve, reject) {
-    const res = await fetch(url);
+  return new Promise((resolve, reject) => {
+    const res = fetch(url);
     resolve(res);
     reject(urlError);
   });
@@ -132,10 +129,10 @@ function handleEditFormSubmit(evt) {
 
 // ESC keydown handler
 function onKeyDown(evt) {
-  const openedModulWindow = document.querySelector('.popup_is-opened');
+  const openedModalWindow = document.querySelector('.popup_is-opened');
   if (evt.key === 'Escape') {
-    if (openedModulWindow) {
-      openedModulWindow.classList.remove('popup_is-opened');
+    if (openedModalWindow) {
+      openedModalWindow.classList.remove('popup_is-opened');
     }
     document.removeEventListener('keydown', onKeyDown);
   }
@@ -159,47 +156,42 @@ profileAddBtn.addEventListener('click', () => {
   openModal(activeModalStyle, popupTypeNewCard, onKeyDown);
 });
 
+// check target overlay
+function isOverlay(evt, closeBtnNode) {
+  if (evt.target === evt.currentTarget || evt.target === closeBtnNode) {
+    return true;
+  }
+  return false;
+}
+
 // close modal EventListeners
 // profile close modal
 popupTypeEdit.addEventListener('click', (evt) => {
-  closeModal(
-    activeModalStyle,
-    popupTypeEdit,
-    onKeyDown,
-    popupEditCloseBtn,
-    evt,
-  );
+  const isNotModalElement = isOverlay(evt, popupEditCloseBtn);
+  if (isNotModalElement) {
+    closeModal(activeModalStyle, popupTypeEdit, onKeyDown);
+  }
 });
 
-// profile submit modal
 popupTypeEdit.addEventListener('click', (evt) => {
-  closeModal(
-    activeModalStyle,
-    popupTypeEdit,
-    onKeyDown,
-    popupEditSubmitBtn,
-    evt,
-  );
+  const isNotModalElement = isOverlay(evt, popupEditSubmitBtn);
+  if (isNotModalElement) {
+    closeModal(activeModalStyle, popupTypeEdit, onKeyDown);
+  }
 });
 
 // add card close modal
 popupTypeNewCard.addEventListener('click', (evt) => {
-  closeModal(
-    activeModalStyle,
-    popupTypeNewCard,
-    onKeyDown,
-    popupAddCloseBtn,
-    evt,
-  );
+  const isNotModalElement = isOverlay(evt, popupAddCloseBtn);
+  if (isNotModalElement) {
+    closeModal(activeModalStyle, popupTypeNewCard, onKeyDown);
+  }
 });
 
 // add card submit modal
 popupTypeNewCard.addEventListener('click', (evt) => {
-  closeModal(
-    activeModalStyle,
-    popupTypeNewCard,
-    onKeyDown,
-    popupAddSubmitBtn,
-    evt,
-  );
+  const isNotModalElement = isOverlay(evt, popupAddSubmitBtn);
+  if (isNotModalElement) {
+    closeModal(activeModalStyle, popupTypeNewCard, onKeyDown);
+  }
 });

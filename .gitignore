@@ -3,6 +3,7 @@
 # package-lock.json
 dist
 node_modules
+.eslintrc.js
 .htmlhintrc
 .prettierrc
 .prettierrc.json
