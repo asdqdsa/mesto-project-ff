@@ -40,9 +40,30 @@
         <button type="button" class="popup__close"></button>
         <h3 class="popup__title">Редактировать профиль</h3>
         <form class="popup__form" name="edit-profile" novalidate>
-          <input id="form-name" type="text" name="name" class="popup__input popup__input_type_name" placeholder="Имя" minlength="2" maxlength="40" required>
+          <input 
+            id="form-name"
+            type="text"
+            name="name"
+            class="popup__input popup__input_type_name"
+            placeholder="Имя"
+            minlength="2"
+            maxlength="40"
+            pattern="([а-яА-ЯёЁa-zA-Z]|-|\s)+"
+            data-error-message="Разрешены только латинские и кириллические буквы, знаки дефиса и пробелы"
+            required
+          >
           <span anchor="form-name" class="form-name-error"></span>
-          <input id="form-description" type="text" name="description" class="popup__input popup__input_type_description" placeholder="Занятие" minlength="2" maxlength="200" required>
+          <input 
+            id="form-description" type="text"
+            name="description"
+            class="popup__input popup__input_type_description"
+            placeholder="Занятие"
+            minlength="2"
+            maxlength="200"
+            pattern="([а-яА-ЯёЁa-zA-Z]|-|\s)+"
+            data-error-message="Разрешены только латинские и кириллические буквы, знаки дефиса и пробелы"
+            required
+          >
           <span anchor="form-description" class="form-description-error"></span>
           <button type="submit" class="button popup__button">Сохранить</button>
         </form>
@@ -53,9 +74,30 @@
         <button type="button" class="popup__close"></button>
         <h3 class="popup__title">Новое место</h3>
         <form class="popup__form" name="new-place" novalidate>
-          <input id="form-place-name" type="text" name="place-name" class="popup__input popup__input_type_card-name" placeholder="Название" minlength="2" maxlength="30" required>
+          <input
+            id="form-place-name"
+            type="text"
+            name="place-name"
+            class="popup__input popup__input_type_card-name"
+            placeholder="Название"
+            minlength="2"
+            maxlength="30"
+            pattern="([а-яА-ЯёЁa-zA-Z]|-|\s)+"
+            data-error-message="Разрешены только латинские и кириллические буквы, знаки дефиса и пробелы"
+            required
+          >
           <span anchor="form-place-name" class="form-place-name-error"></span>
-          <input id="form-link" type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" minlength="2" required>
+          <input
+            id="form-link"
+            type="url"
+            name="link"
+            class="popup__input popup__input_type_url"
+            placeholder="Ссылка на картинку"
+            minlength="2"
+            
+            data-error-message="Введите адрес сайта."
+            required
+          >
           <span anchor="form-link" class="form-link-error"></span>
           <button type="submit" class="button popup__button">Сохранить</button>
         </form>

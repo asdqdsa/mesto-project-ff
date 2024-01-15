@@ -2,7 +2,7 @@ import './index.css';
 import { createCard, removeCard, likeCard } from '../components/card';
 import { initialCards } from '../components/cards';
 import { openModal, closeModal } from '../components/modal';
-import { clearValidation, inputValidtion } from '../components/validation';
+import { enableValidation, clearValidation } from '../components/validation';
 
 // @todo: DOM узлы
 const placesList = document.querySelector('.places__list');
@@ -54,9 +54,10 @@ const listOfElementsToAnimate = [
 popupProfileForm.addEventListener('submit', (evt) =>
   handleEditFormSubmit(evt, popupTypeEdit),
 );
-popupAddForm.addEventListener('submit', (evt) =>
-  handleAddFormSubmit(evt, popupTypeNewCard),
-);
+popupAddForm.addEventListener('submit', (evt) => {
+  handleAddFormSubmit(evt, popupTypeNewCard);
+  clearValidation(popupAddForm, validationConfig);
+});
 
 // add styles to the list of elements
 function addStyleToElements(listOfElements, styleClass) {
@@ -150,12 +151,14 @@ function handleCloseModal(evt, modalNode, closeBtnNode) {
 // open modal EventListeners
 // open pfp modal
 profilePicture.addEventListener('click', () => {
+  clearValidation(popupProfileForm, validationConfig);
   setCredentials();
   openModal(activeModalStyle, popupTypeEdit, onKeyDown);
 });
 
 //  open edit modal
 profileEditBtn.addEventListener('click', () => {
+  clearValidation(popupProfileForm, validationConfig);
   setCredentials();
   openModal(activeModalStyle, popupTypeEdit, onKeyDown);
 });
@@ -181,50 +184,15 @@ popupTypeImage.addEventListener('click', (evt) =>
   handleCloseModal(evt, popupTypeImage, popupImageCloseBtn),
 );
 
+// validation variables
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  buttonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_is-inactive',
+  inputErrorClass: 'popup__input-error',
+  errorElementClass: 'popup__input-error_active',
+};
+
 // validation
-
-// const popupError = document.querySelector(`.${popupProfileName.id}-error`);
-
-const showInputError = (formElement, inputElement, errorMessage) => {
-  const inputError = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.add('popup__input-error');
-
-  inputError.textContent = errorMessage;
-  inputError.classList.add('popup__input-error_active');
-};
-
-const hideInputError = (formElement, inputElement) => {
-  console.log(formElement, inputElement, 'input element id');
-  const inputError = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.remove('popup__input-error');
-  inputError.classList.remove('popup__input-error_active');
-  inputError.textContent = '';
-};
-
-const isValid = (formElement, inputElement) => {
-  if (!inputElement.validity.valid) {
-    console.log('show error');
-    showInputError(formElement, inputElement, inputElement.validationMessage);
-  } else {
-    console.log(inputElement, 'hide error');
-    hideInputError(formElement, inputElement);
-  }
-};
-
-const setEventListeners = (formElement) => {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  inputList.forEach((input) => {
-    input.addEventListener('input', () => isValid(formElement, input));
-  });
-};
-
-const enableValidation = () => {
-  const formList = Array.from(document.querySelectorAll('.popup__form'));
-  formList.forEach((form) => setEventListeners(form));
-};
-
-enableValidation();
-
-// validate inputs
-// popupProfileName.addEventListener('input', enableValidation);
-// popupAddName.addEventListener('input', enableValidation);
+enableValidation(validationConfig);
