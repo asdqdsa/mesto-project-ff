@@ -1,0 +1,10 @@
+.popup__input-error_active {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  background-color: red;
+  color: white;
+  font-size: 14px;
+  inset-block-start: anchor(bottom);
+  /* inset-inline-start: anchor(0%); */
+}

@@ -2,6 +2,7 @@ import './index.css';
 import { createCard, removeCard, likeCard } from '../components/card';
 import { initialCards } from '../components/cards';
 import { openModal, closeModal } from '../components/modal';
+import { clearValidation, inputValidtion } from '../components/validation';
 
 // @todo: DOM узлы
 const placesList = document.querySelector('.places__list');
@@ -26,9 +27,9 @@ const popupImageCaption = popupTypeImage.querySelector('.popup__caption');
 const popupImageCloseBtn = popupTypeImage.querySelector('.popup__close');
 
 // popup Edit Form Nodes
-const popupEditForm = document.forms['edit-profile'];
-const popupName = popupEditForm.name;
-const popupDescription = popupEditForm.description;
+const popupProfileForm = document.forms['edit-profile'];
+const popupProfileName = popupProfileForm.name;
+const popupProfileDescription = popupProfileForm.description;
 
 // popup Add Form Nodes
 const popupAddForm = document.forms['new-place'];
@@ -50,7 +51,7 @@ const listOfElementsToAnimate = [
   popupTypeImage,
 ];
 
-popupEditForm.addEventListener('submit', (evt) =>
+popupProfileForm.addEventListener('submit', (evt) =>
   handleEditFormSubmit(evt, popupTypeEdit),
 );
 popupAddForm.addEventListener('submit', (evt) =>
@@ -78,8 +79,8 @@ function showCardImage(name, link) {
 
 // filling in profile credentials
 function setCredentials() {
-  popupName.value = profileTitle.textContent;
-  popupDescription.value = profileDescription.textContent;
+  popupProfileName.value = profileTitle.textContent;
+  popupProfileDescription.value = profileDescription.textContent;
 }
 
 // add place with name and a link for image
@@ -124,8 +125,8 @@ function handleAddFormSubmit(evt, modalNode) {
 // submit handler edit profile
 function handleEditFormSubmit(evt, modalNode) {
   evt.preventDefault();
-  profileTitle.textContent = popupName.value;
-  profileDescription.textContent = popupDescription.value;
+  profileTitle.textContent = popupProfileName.value;
+  profileDescription.textContent = popupProfileDescription.value;
   closeModal(activeModalStyle, modalNode, onKeyDown);
 }
 
@@ -179,3 +180,51 @@ popupTypeNewCard.addEventListener('click', (evt) =>
 popupTypeImage.addEventListener('click', (evt) =>
   handleCloseModal(evt, popupTypeImage, popupImageCloseBtn),
 );
+
+// validation
+
+// const popupError = document.querySelector(`.${popupProfileName.id}-error`);
+
+const showInputError = (formElement, inputElement, errorMessage) => {
+  const inputError = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.add('popup__input-error');
+
+  inputError.textContent = errorMessage;
+  inputError.classList.add('popup__input-error_active');
+};
+
+const hideInputError = (formElement, inputElement) => {
+  console.log(formElement, inputElement, 'input element id');
+  const inputError = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.remove('popup__input-error');
+  inputError.classList.remove('popup__input-error_active');
+  inputError.textContent = '';
+};
+
+const isValid = (formElement, inputElement) => {
+  if (!inputElement.validity.valid) {
+    console.log('show error');
+    showInputError(formElement, inputElement, inputElement.validationMessage);
+  } else {
+    console.log(inputElement, 'hide error');
+    hideInputError(formElement, inputElement);
+  }
+};
+
+const setEventListeners = (formElement) => {
+  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
+  inputList.forEach((input) => {
+    input.addEventListener('input', () => isValid(formElement, input));
+  });
+};
+
+const enableValidation = () => {
+  const formList = Array.from(document.querySelectorAll('.popup__form'));
+  formList.forEach((form) => setEventListeners(form));
+};
+
+enableValidation();
+
+// validate inputs
+// popupProfileName.addEventListener('input', enableValidation);
+// popupAddName.addEventListener('input', enableValidation);
