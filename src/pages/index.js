@@ -1,8 +1,15 @@
 import './index.css';
 import { createCard, removeCard, likeCard } from '../components/card';
-import { initialCards } from '../components/cards';
+// import { initialCards } from '../components/cards';
 import { openModal, closeModal } from '../components/modal';
 import { enableValidation, clearValidation } from '../components/validation';
+import {
+  getAccountCredentials,
+  getInitialCards,
+  pushAccountCredentials,
+  pushNewPlace,
+  pushProfilePicture,
+} from '../components/api';
 
 // @todo: DOM узлы
 const placesList = document.querySelector('.places__list');
@@ -65,10 +72,30 @@ function addStyleToElements(listOfElements, styleClass) {
 }
 addStyleToElements(listOfElementsToAnimate, animateModalStyle);
 
-// @todo: Вывести карточки на страницу
-initialCards.forEach((card) => {
-  placesList.append(createCard(card, removeCard, likeCard, showCardImage));
+export const config = {
+  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-4',
+  headers: {
+    authorization: '14f77105-3b2d-422f-94c2-318e8127f8a3',
+    'Content-Type': 'application/json',
+  },
+};
+
+// getInitialCards(config).forEach((card) => {
+//   placesList.append(createCard(card, removeCard, likeCard, showCardImage));
+// });
+
+// console.log(getInitialCards(config));
+getInitialCards(config).then((data) => {
+  console.log(data);
+  data.forEach((card) => {
+    placesList.append(createCard(card, removeCard, likeCard, showCardImage));
+  });
 });
+
+// @todo: Вывести карточки на страницу
+// initialCards.forEach((card) => {
+//   placesList.append(createCard(card, removeCard, likeCard, showCardImage));
+// });
 
 // handle show cards photo
 function showCardImage(name, link) {
@@ -86,6 +113,7 @@ function setCredentials() {
 
 // add place with name and a link for image
 async function addPlace(name, link) {
+  console.log(name.value, link.value);
   const initCardObj = {};
   initCardObj.name = name.value;
   initCardObj.link = await loadURL(link.value, image404)
@@ -98,6 +126,8 @@ async function addPlace(name, link) {
   placesList.prepend(
     createCard(initCardObj, removeCard, likeCard, showCardImage),
   );
+  // console.log(name, link.value);
+  pushNewPlace(config, initCardObj.name, initCardObj.link);
 }
 
 // URL fetch
@@ -128,6 +158,11 @@ function handleEditFormSubmit(evt, modalNode) {
   evt.preventDefault();
   profileTitle.textContent = popupProfileName.value;
   profileDescription.textContent = popupProfileDescription.value;
+  pushAccountCredentials(
+    config,
+    popupProfileName.value,
+    popupProfileDescription.value,
+  );
   closeModal(activeModalStyle, modalNode, onKeyDown);
 }
 
@@ -196,3 +231,23 @@ const validationConfig = {
 
 // validation
 enableValidation(validationConfig);
+
+// sync account credentials
+function updateAccountCredentials(config) {
+  getAccountCredentials(config).then((data) => {
+    console.log(data.name);
+    profileTitle.textContent = data.name;
+    profileDescription.textContent = data.about;
+    profilePicture.style.backgroundImage = `url(${data.avatar})`;
+  });
+}
+updateAccountCredentials(config);
+
+// sync account pfp
+function setProfilePicture(config) {
+  pushProfilePicture(
+    config,
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Dasha_Nekrasova.jpg/800px-Dasha_Nekrasova.jpg',
+  );
+}
+// setProfilePicture(config);
