@@ -1,10 +1,13 @@
 .popup__input-error_active {
-  display: block;
   position: absolute;
   z-index: 1;
-  background-color: red;
-  color: white;
-  font-size: 14px;
+  display: flex;
+  width: 80%;
+  color: #f00;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
   inset-block-start: anchor(bottom);
-  /* inset-inline-start: anchor(0%); */
+  line-height: normal;
+  word-wrap: break-word;
 }
