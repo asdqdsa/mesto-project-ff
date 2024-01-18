@@ -6,107 +6,45 @@
 //   },
 // };
 
-export const getInitialCards = async (config) => {
-  return fetch(`${config.baseUrl}/cards`, {
+// fetch fn
+export async function fetchRequest(config, method, path, body) {
+  const request = {
+    method: method,
     headers: config.headers,
-  })
+  };
+  if (body != null) {
+    console.log('not null', body);
+    request.body = JSON.stringify(body);
+    console.log(request);
+  }
+  return fetch(`${config.baseUrl}${path}`, request)
     .then((resolve) => {
       if (resolve.ok) return resolve.json();
       return Promise.reject(`Error: ${resolve.status}`);
     })
     .catch((error) => console.error(error));
-};
+}
 
-export const pushAccountCredentials = async (config, name, about) => {
-  return fetch(`${config.baseUrl}/users/me`, {
-    method: 'PATCH',
-    headers: config.headers,
-    body: JSON.stringify({
-      name: name,
-      about: about,
-    }),
-  })
-    .then((resolve) => {
-      if (resolve.ok) return resolve.json();
-      return Promise.reject(`Error: ${resolve.status}`);
-    })
-    .catch((error) => console.error(error));
-};
+export const getInitialCards = (config) =>
+  fetchRequest(config, 'GET', '/cards', null);
 
-export const getAccountCredentials = async (config) => {
-  return fetch(`${config.baseUrl}/users/me`, {
-    headers: config.headers,
-  })
-    .then((resolve) => {
-      if (resolve.ok) return resolve.json();
-      return Promise.reject(`Error: ${resolve.status}`);
-    })
-    .catch((error) => console.error(error));
-};
+export const pushAccountCredentials = (config, name, about) =>
+  fetchRequest(config, 'PATCH', '/users/me', { name: name, about: about });
 
-export const pushNewPlace = async (config, name, link) => {
-  return fetch(`${config.baseUrl}/cards`, {
-    method: 'POST',
-    headers: config.headers,
-    body: JSON.stringify({
-      name: name,
-      link: link,
-    }),
-  })
-    .then((resolve) => {
-      if (resolve.ok) return resolve.json();
-      return Promise.reject(`Error: ${resolve.status}`);
-    })
-    .catch((error) => console.error(error));
-};
+export const getAccountCredentials = (config) =>
+  fetchRequest(config, 'GET', '/users/me', null);
 
-export const removePlace = async (config, id) => {
-  return fetch(`${config.baseUrl}/cards/${id}`, {
-    method: 'DELETE',
-    headers: config.headers,
-  })
-    .then((resolve) => {
-      if (resolve.ok) return resolve.json();
-      return Promise.reject(`Error: ${resolve.status}`);
-    })
-    .catch((error) => console.error(error));
-};
+export const pushNewPlace = (config, name, link) =>
+  fetchRequest(config, 'POST', '/cards', { name: name, link: link });
 
-export const likePlace = async (config, id) => {
-  return fetch(`${config.baseUrl}/cards/likes/${id}`, {
-    method: 'PUT',
-    headers: config.headers,
-  })
-    .then((resolve) => {
-      if (resolve.ok) return resolve.json();
-      return Promise.reject(`Error: ${resolve.status}`);
-    })
-    .catch((error) => console.error(error));
-};
+export const removePlace = (config, id) =>
+  fetchRequest(config, 'DELETE', `/cards/${id}`, null);
 
-export const unlikePlace = async (config, id) => {
-  return fetch(`${config.baseUrl}/cards/likes/${id}`, {
-    method: 'DELETE',
-    headers: config.headers,
-  })
-    .then((resolve) => {
-      if (resolve.ok) return resolve.json();
-      return Promise.reject(`Error: ${resolve.status}`);
-    })
-    .catch((error) => console.error(error));
-};
+export const likePlace = (config, id) =>
+  fetchRequest(config, 'PUT', `/cards/likes/${id}`, null);
 
-export const pushProfilePicture = (config, link) => {
-  return fetch(`${config.baseUrl}/users/me/avatar`, {
-    method: 'PATCH',
-    headers: config.headers,
-    body: JSON.stringify({
-      avatar: link,
-    }),
-  })
-    .then((resolve) => {
-      if (resolve.ok) return resolve.json();
-      return Promise.reject(`Error: ${resolve.status}`);
-    })
-    .catch((error) => console.error(error));
-};
+export const unlikePlace = (config, id) =>
+  fetchRequest(config, 'DELETE', `/cards/likes/${id}`, null);
+
+export const pushProfilePicture = (config, link) =>
+  fetchRequest(config, 'PATCH', '/users/me/avatar', { avatar: link });

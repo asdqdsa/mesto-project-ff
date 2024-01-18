@@ -1,6 +1,5 @@
 import './index.css';
 import { createCard, removeCard, likeCard } from '../components/card';
-// import { initialCards } from '../components/cards';
 import { openModal, closeModal } from '../components/modal';
 import { enableValidation, clearValidation } from '../components/validation';
 import {
@@ -80,23 +79,6 @@ export const config = {
   },
 };
 
-// getInitialCards(config).forEach((card) => {
-//   placesList.append(createCard(card, removeCard, likeCard, showCardImage));
-// });
-
-// console.log(getInitialCards(config));
-getInitialCards(config).then((data) => {
-  console.log(data);
-  data.forEach((card) => {
-    placesList.append(createCard(card, removeCard, likeCard, showCardImage));
-  });
-});
-
-// @todo: Вывести карточки на страницу
-// initialCards.forEach((card) => {
-//   placesList.append(createCard(card, removeCard, likeCard, showCardImage));
-// });
-
 // handle show cards photo
 function showCardImage(name, link) {
   openModal(activeModalStyle, popupTypeImage, onKeyDown);
@@ -123,11 +105,11 @@ async function addPlace(name, link) {
     })
     .catch(() => image404);
 
-  placesList.prepend(
-    createCard(initCardObj, removeCard, likeCard, showCardImage),
-  );
+  pushNewPlace(config, initCardObj.name, initCardObj.link).then((data) => {
+    console.log(data);
+    placesList.prepend(createCard(data, removeCard, likeCard, showCardImage));
+  });
   // console.log(name, link.value);
-  pushNewPlace(config, initCardObj.name, initCardObj.link);
 }
 
 // URL fetch
@@ -232,17 +214,6 @@ const validationConfig = {
 // validation
 enableValidation(validationConfig);
 
-// sync account credentials
-function updateAccountCredentials(config) {
-  getAccountCredentials(config).then((data) => {
-    console.log(data.name);
-    profileTitle.textContent = data.name;
-    profileDescription.textContent = data.about;
-    profilePicture.style.backgroundImage = `url(${data.avatar})`;
-  });
-}
-updateAccountCredentials(config);
-
 // sync account pfp
 function setProfilePicture(config) {
   pushProfilePicture(
@@ -251,3 +222,14 @@ function setProfilePicture(config) {
   );
 }
 // setProfilePicture(config);
+
+Promise.all([getAccountCredentials(config), getInitialCards(config)])
+  .then(([accauntData, cardsData]) => {
+    profileTitle.textContent = accauntData.name;
+    profileDescription.textContent = accauntData.about;
+    profilePicture.style.backgroundImage = `url(${accauntData.avatar})`;
+    cardsData.forEach((card) => {
+      placesList.append(createCard(card, removeCard, likeCard, showCardImage));
+    });
+  })
+  .catch((error) => console.error(error));

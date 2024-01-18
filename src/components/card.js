@@ -16,6 +16,7 @@ export function createCard(
   cardContentClone
     .querySelector('.card')
     .setAttribute('data-id', `${card['_id']}`);
+  // console.log(card.likes.length);
   cardContentClone.querySelector('.card__like-count').textContent =
     card.likes.length;
   cardContentClone.querySelector('.card__title').textContent = card.name;
@@ -23,6 +24,8 @@ export function createCard(
   cardContentClone.querySelector(
     '.card__image',
   ).alt = `Фотография местности ${card.name}`;
+
+  // if (card.)
   cardContentClone
     .querySelector('.card__delete-button')
     .addEventListener('click', (evt) => removeCardHandler(evt));
@@ -42,6 +45,11 @@ export function createCard(
     return user['_id'] === 'b1d9d2a8723cef39cda63569';
   });
   if (isCardLiked) likeButton.classList.add('card__like-button_is-active');
+
+  const isOwnerCard = card.owner['_id'] === 'b1d9d2a8723cef39cda63569';
+  if (!isOwnerCard) {
+    cardContentClone.querySelector('.card__delete-button').remove();
+  }
   return cardContentClone;
 }
 
