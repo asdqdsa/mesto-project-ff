@@ -94,7 +94,7 @@ function setCredentials() {
 }
 
 // add place with name and a link for image
-async function addPlace(name, link) {
+async function addPlace(name, link, modalNode) {
   console.log(name.value, link.value);
   const initCardObj = {};
   initCardObj.name = name.value;
@@ -104,12 +104,13 @@ async function addPlace(name, link) {
       return resolve.url;
     })
     .catch(() => image404);
-
-  pushNewPlace(config, initCardObj.name, initCardObj.link).then((data) => {
-    console.log(data);
-    placesList.prepend(createCard(data, removeCard, likeCard, showCardImage));
-  });
-  // console.log(name, link.value);
+  pushNewPlace(config, initCardObj.name, initCardObj.link)
+    .then((data) => {
+      console.log(data);
+      placesList.prepend(createCard(data, removeCard, likeCard, showCardImage));
+    })
+    .catch((error) => console.error(error))
+    .finally(() => renderLoading(false, modalNode));
 }
 
 // URL fetch
@@ -130,7 +131,8 @@ function clearInputFields(name, link) {
 // submit handler add card
 function handleAddFormSubmit(evt, modalNode) {
   evt.preventDefault();
-  addPlace(popupAddName, popupAddLink);
+  renderLoading(true, modalNode);
+  addPlace(popupAddName, popupAddLink, modalNode);
   clearInputFields(popupAddName, popupAddLink);
   closeModal(activeModalStyle, modalNode, onKeyDown);
 }
@@ -140,12 +142,26 @@ function handleEditFormSubmit(evt, modalNode) {
   evt.preventDefault();
   profileTitle.textContent = popupProfileName.value;
   profileDescription.textContent = popupProfileDescription.value;
+  renderLoading(true, modalNode);
   pushAccountCredentials(
     config,
     popupProfileName.value,
     popupProfileDescription.value,
-  );
+  )
+    .catch((error) => console.error(error))
+    .finally(() => renderLoading(false, modalNode));
   closeModal(activeModalStyle, modalNode, onKeyDown);
+}
+
+// const popupSubmitButton = document.querySelectorAll('.popup__button');
+
+function renderLoading(isLoading, modalElement) {
+  const popupSubmitButton = modalElement.querySelector('.popup__button');
+  if (isLoading) {
+    popupSubmitButton.textContent = 'Сохранение...';
+  } else {
+    popupSubmitButton.textContent = 'Сохранить';
+  }
 }
 
 // ESC keydown handler
