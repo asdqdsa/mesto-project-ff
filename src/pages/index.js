@@ -90,9 +90,10 @@ popupProfilePictureForm.addEventListener('submit', (evt) => {
 });
 
 // submit profile-info
-popupProfileInfoForm.addEventListener('submit', (evt) =>
-  handleEditFormSubmit(evt, popupTypeEdit),
-);
+popupProfileInfoForm.addEventListener('submit', (evt) => {
+  handleEditFormSubmit(evt, popupTypeEdit);
+  clearValidation(popupProfileInfoForm, VALIDATION_CONFIG);
+});
 
 // submit add-place
 popupAddForm.addEventListener('submit', (evt) => {

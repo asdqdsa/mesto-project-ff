@@ -18,16 +18,12 @@
   background-color: #000c;
   content: '';
   opacity: 0;
-  transition:
-    visibility 0s 0.6s,
-    opacity 0.6s ease;
-  visibility: 0;
+  transition: opacity 0.6s ease;
 }
 
 .profile__image:hover::before {
   display: block;
   opacity: 1;
-  visibility: 1;
 }
 
 .profile__image::after {
@@ -40,15 +36,11 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26' fill='none'%3E%3Cpath d='M26 3.45351L6.76981 22.7932L3.33585 19.2903L22.517 0L26 3.45351ZM0 26L5.10189 24.4706L1.52075 21.0171L0 26Z' fill='white'/%3E%3C/svg%3E");
   content: '';
   opacity: 0;
-  transition:
-    visibility 0s 0.6s,
-    opacity 0.6s ease;
-  visibility: 0;
+  transition: opacity 0.6s ease;
 }
 
 .profile__image:hover::after {
   opacity: 1;
-  visibility: 1;
 }
 
 @media screen and (max-width: 740px) {
