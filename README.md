@@ -30,4 +30,4 @@
 
 ИЛИ
 
-- Или собрать из исходинков в ```main```  ``` git clone https://github.com/asdqdsa/mesto-project-ff.git ``` исполнив команды ``` npm install ``` и ``` npm build ``` в корне проекта
+- Или собрать из исходинков в ```main```  ``` git clone https://github.com/asdqdsa/mesto-project-ff.git ``` исполнив команды ``` npm install ``` и ``` npm run build ``` в корне проекта
