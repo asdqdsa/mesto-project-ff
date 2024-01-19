@@ -1,6 +1,6 @@
 # Проектная работа Mesto
 
-https://github.com/asdqdsa/mesto-project-ff
+
 
 1. Task: Валидация форм, интеграция с API и деплой.
 2. Screenshot: ![image](https://github.com/asdqdsa/mesto-project-ff/assets/56947738/e8b83b7c-7c26-4873-a06b-2bbd56e8080b)
