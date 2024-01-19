@@ -7,7 +7,6 @@ const showInputError = (formElement, inputElement, errorMessage, config) => {
 };
 
 const hideInputError = (formElement, inputElement, config) => {
-  // console.log(formElement, inputElement, 'input element id');
   const inputError = formElement.querySelector(`.${inputElement.id}-error`);
   inputElement.classList.remove(config.inputErrorClass);
   inputError.classList.remove(config.errorElementClass);
@@ -21,21 +20,14 @@ const isValid = (formElement, inputElement, config) => {
     inputElement.setCustomValidity('');
   }
   if (!inputElement.validity.valid) {
-    showInputError(
-      formElement,
-      inputElement,
-      inputElement.validationMessage,
-      config,
-    );
+    showInputError(formElement, inputElement, inputElement.validationMessage, config);
   } else {
     hideInputError(formElement, inputElement, config);
   }
 };
 
 const setEventListeners = (formElement, config) => {
-  const inputList = Array.from(
-    formElement.querySelectorAll(config.inputSelector),
-  );
+  const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
   const buttonElement = formElement.querySelector(config.buttonSelector);
   toggleButtonState(inputList, buttonElement, config);
   inputList.forEach((input) => {

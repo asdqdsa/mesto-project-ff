@@ -1,23 +1,10 @@
-// const config = {
-//   baseUrl: 'https://nomoreparties.co/v1/wff-cohort-4',
-//   headers: {
-//     authorization: '14f77105-3b2d-422f-94c2-318e8127f8a3',
-//     'Content-Type': 'application/json',
-//     'Access-Control-Allow-Origin': '*',
-//   },
-// };
-
 // fetch fn
 export async function fetchRequest(config, method, path, body) {
   const request = {
     method: method,
     headers: config.headers,
   };
-  if (body != null) {
-    console.log('not null', body);
-    request.body = JSON.stringify(body);
-    console.log(request);
-  }
+  if (body != null) request.body = JSON.stringify(body);
   return fetch(`${config.baseUrl}${path}`, request)
     .then((resolve) => {
       if (resolve.ok) return resolve.json();

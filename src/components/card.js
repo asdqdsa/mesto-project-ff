@@ -1,9 +1,11 @@
-import { config } from '../pages/index';
+import { REQUEST_CONFIG } from '../pages/index';
 import { removePlace, likePlace, unlikePlace, getLink } from './api';
 
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
 const cardContent = cardTemplate.content;
+
+// placeholder image
 const ERROR_IMG_LINK =
   'https://previews.123rf.com/images/krisckam/krisckam1307/krisckam130700312/20984907-404-error-file-not-found-illustration-vector.jpg';
 
@@ -20,7 +22,6 @@ export function createCard(
   cardContentClone.querySelector('.card__like-count').textContent = card.likes.length;
   cardContentClone.querySelector('.card__title').textContent = card.name;
 
-  // cardContentClone.querySelector('.card__image').src = card.link;
   const cardCloneImg = cardContentClone.querySelector('.card__image');
   getLink(card.link, ERROR_IMG_LINK).then((linkImg) => (cardCloneImg.src = linkImg));
 
@@ -28,7 +29,6 @@ export function createCard(
     '.card__image',
   ).alt = `Фотография местности ${card.name}`;
 
-  // if (card.)
   cardContentClone
     .querySelector('.card__delete-button')
     .addEventListener('click', (evt) => removeCardHandler(evt));
@@ -57,11 +57,11 @@ export function likeCard(evt) {
   const cardId = card.dataset.id;
   const cardLikeCount = card.querySelector('.card__like-count');
   if (evt.target.classList.contains('card__like-button_is-active')) {
-    likePlace(config, cardId).then((data) => {
+    likePlace(REQUEST_CONFIG, cardId).then((data) => {
       cardLikeCount.textContent = data.likes.length;
     });
   } else {
-    unlikePlace(config, cardId).then((data) => {
+    unlikePlace(REQUEST_CONFIG, cardId).then((data) => {
       cardLikeCount.textContent = data.likes.length;
     });
   }
@@ -71,6 +71,6 @@ export function likeCard(evt) {
 export function removeCard(evt) {
   const card = evt.target.closest('.card');
   const idCard = card.dataset.id;
-  removePlace(config, idCard);
+  removePlace(REQUEST_CONFIG, idCard);
   card.remove();
 }

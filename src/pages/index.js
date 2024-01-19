@@ -13,6 +13,25 @@ import {
 // ID
 const ACC_ID = localStorage.getItem('ACC_ID_MESTO');
 
+// config request
+export const REQUEST_CONFIG = {
+  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-4',
+  headers: {
+    authorization: '14f77105-3b2d-422f-94c2-318e8127f8a3',
+    'Content-Type': 'application/json',
+  },
+};
+
+// validation variables
+const VALIDATION_CONFIG = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  buttonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_is-inactive',
+  inputErrorClass: 'popup__input-error',
+  errorElementClass: 'popup__input-error_active',
+};
+
 // @todo: DOM узлы
 const placesList = document.querySelector('.places__list');
 
@@ -24,8 +43,10 @@ const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 
 // modal Nodes
+const popupTypeProfile = document.querySelector('.popup_type_profile');
 const popupTypeEdit = document.querySelector('.popup_type_edit');
 const popupTypeNewCard = document.querySelector('.popup_type_new-card');
+const popupProfileCloseBtn = popupTypeProfile.querySelector('.popup__close');
 const popupEditCloseBtn = popupTypeEdit.querySelector('.popup__close');
 const popupAddCloseBtn = popupTypeNewCard.querySelector('.popup__close');
 
@@ -35,10 +56,14 @@ const popupImageFrame = popupTypeImage.querySelector('.popup__image');
 const popupImageCaption = popupTypeImage.querySelector('.popup__caption');
 const popupImageCloseBtn = popupTypeImage.querySelector('.popup__close');
 
+// popup Profile Form Nodes
+const popupProfilePictureForm = document.forms['new-picture'];
+const popupAddPictureLink = popupProfilePictureForm.link;
+
 // popup Edit Form Nodes
-const popupProfileForm = document.forms['edit-profile'];
-const popupProfileName = popupProfileForm.name;
-const popupProfileDescription = popupProfileForm.description;
+const popupProfileInfoForm = document.forms['edit-profile'];
+const popupProfileName = popupProfileInfoForm.name;
+const popupProfileDescription = popupProfileInfoForm.description;
 
 // popup Add Form Nodes
 const popupAddForm = document.forms['new-place'];
@@ -50,14 +75,29 @@ const activeModalStyle = 'popup_is-opened';
 const animateModalStyle = 'popup_is-animated';
 
 // list of elements to animate
-const listOfElementsToAnimate = [popupTypeEdit, popupTypeNewCard, popupTypeImage];
+const listOfElementsToAnimate = [
+  popupTypeEdit,
+  popupTypeNewCard,
+  popupTypeImage,
+  popupTypeProfile,
+];
 
-popupProfileForm.addEventListener('submit', (evt) =>
+// popup submit listeners
+// submit profile-picture
+popupProfilePictureForm.addEventListener('submit', (evt) => {
+  handleProfileFormSubmit(evt, popupTypeProfile);
+  clearValidation(popupProfilePictureForm, VALIDATION_CONFIG);
+});
+
+// submit profile-info
+popupProfileInfoForm.addEventListener('submit', (evt) =>
   handleEditFormSubmit(evt, popupTypeEdit),
 );
+
+// submit add-place
 popupAddForm.addEventListener('submit', (evt) => {
   handleAddFormSubmit(evt, popupTypeNewCard);
-  clearValidation(popupAddForm, validationConfig);
+  clearValidation(popupAddForm, VALIDATION_CONFIG);
 });
 
 // add styles to the list of elements
@@ -65,14 +105,6 @@ function addStyleToElements(listOfElements, styleClass) {
   listOfElements.forEach((element) => element.classList.add(styleClass));
 }
 addStyleToElements(listOfElementsToAnimate, animateModalStyle);
-
-export const config = {
-  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-4',
-  headers: {
-    authorization: '14f77105-3b2d-422f-94c2-318e8127f8a3',
-    'Content-Type': 'application/json',
-  },
-};
 
 // handle show cards photo
 function showCardImage(name, link) {
@@ -90,23 +122,32 @@ function setCredentials() {
 
 // add place with name and a link for image
 function addPlace(name, link, modalNode, accountId) {
-  console.log(name.value, link.value);
   const initCardObj = { name: name.value, link: link.value };
-  pushNewPlace(config, initCardObj.name, initCardObj.link)
+  pushNewPlace(REQUEST_CONFIG, initCardObj.name, initCardObj.link)
     .then((data) => {
-      console.log(data);
       placesList.prepend(
         createCard(data, removeCard, likeCard, showCardImage, accountId),
       );
     })
     .catch((error) => console.error(error))
-    .finally(() => renderLoading(false, modalNode));
+    .finally(() => {
+      enableValidation(VALIDATION_CONFIG);
+      renderLoading(false, modalNode);
+    });
 }
 
 // clearing inputs
-function clearInputFields(name, link) {
-  name.value = '';
-  link.value = '';
+function clearInputFields(...inputs) {
+  inputs.forEach((input) => (input.value = ''));
+}
+
+// submit handler set pfp
+function handleProfileFormSubmit(evt, modalNode) {
+  evt.preventDefault();
+  renderLoading(true, modalNode);
+  setProfilePicture(REQUEST_CONFIG, modalNode);
+  clearInputFields(popupAddPictureLink);
+  closeModal(activeModalStyle, modalNode, onKeyDown);
 }
 
 // submit handler add card
@@ -124,12 +165,19 @@ function handleEditFormSubmit(evt, modalNode) {
   profileTitle.textContent = popupProfileName.value;
   profileDescription.textContent = popupProfileDescription.value;
   renderLoading(true, modalNode);
-  pushAccountCredentials(config, popupProfileName.value, popupProfileDescription.value)
+  pushAccountCredentials(
+    REQUEST_CONFIG,
+    popupProfileName.value,
+    popupProfileDescription.value,
+  )
     .catch((error) => console.error(error))
-    .finally(() => renderLoading(false, modalNode));
+    .finally(() => {
+      renderLoading(false, modalNode);
+    });
   closeModal(activeModalStyle, modalNode, onKeyDown);
 }
 
+// Submit loading UX
 function renderLoading(isLoading, modalElement) {
   const popupSubmitButton = modalElement.querySelector('.popup__button');
   if (isLoading) {
@@ -159,14 +207,13 @@ function handleCloseModal(evt, modalNode, closeBtnNode) {
 // open modal EventListeners
 // open pfp modal
 profilePicture.addEventListener('click', () => {
-  clearValidation(popupProfileForm, validationConfig);
-  setCredentials();
-  openModal(activeModalStyle, popupTypeEdit, onKeyDown);
+  clearValidation(popupProfileInfoForm, VALIDATION_CONFIG);
+  openModal(activeModalStyle, popupTypeProfile, onKeyDown);
 });
 
 //  open edit modal
 profileEditBtn.addEventListener('click', () => {
-  clearValidation(popupProfileForm, validationConfig);
+  clearValidation(popupProfileInfoForm, VALIDATION_CONFIG);
   setCredentials();
   openModal(activeModalStyle, popupTypeEdit, onKeyDown);
 });
@@ -177,7 +224,12 @@ profileAddBtn.addEventListener('click', () => {
 });
 
 // close modal EventListeners
-// profile close modal
+// profile pfp close modal
+popupTypeProfile.addEventListener('click', (evt) =>
+  handleCloseModal(evt, popupTypeProfile, popupProfileCloseBtn),
+);
+
+// profile description close modal
 popupTypeEdit.addEventListener('click', (evt) =>
   handleCloseModal(evt, popupTypeEdit, popupEditCloseBtn),
 );
@@ -192,29 +244,23 @@ popupTypeImage.addEventListener('click', (evt) =>
   handleCloseModal(evt, popupTypeImage, popupImageCloseBtn),
 );
 
-// validation variables
-const validationConfig = {
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  buttonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_is-inactive',
-  inputErrorClass: 'popup__input-error',
-  errorElementClass: 'popup__input-error_active',
-};
-
 // validation
-enableValidation(validationConfig);
+enableValidation(VALIDATION_CONFIG);
 
 // set account pfp
-function setProfilePicture(config) {
-  pushProfilePicture(
-    config,
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Dasha_Nekrasova.jpg/800px-Dasha_Nekrasova.jpg',
-  );
+function setProfilePicture(config, modalNode) {
+  const link = popupAddPictureLink.value;
+  profilePicture.style.backgroundImage = `url(${link})`;
+  pushProfilePicture(config, link)
+    .catch((error) => console.error(error))
+    .finally(() => {
+      enableValidation(VALIDATION_CONFIG);
+      renderLoading(false, modalNode);
+    });
 }
 
 // sync account data
-Promise.all([getAccountCredentials(config), getInitialCards(config)])
+Promise.all([getAccountCredentials(REQUEST_CONFIG), getInitialCards(REQUEST_CONFIG)])
   .then(([accountData, cardsData]) => {
     localStorage.setItem('ACC_ID_MESTO', accountData._id);
     profileTitle.textContent = accountData.name;
