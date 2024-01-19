@@ -1,9 +1,11 @@
 import { config } from '../pages/index';
-import { removePlace, likePlace, unlikePlace } from './api';
+import { removePlace, likePlace, unlikePlace, getLink } from './api';
 
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
 const cardContent = cardTemplate.content;
+const ERROR_IMG_LINK =
+  'https://previews.123rf.com/images/krisckam/krisckam1307/krisckam130700312/20984907-404-error-file-not-found-illustration-vector.jpg';
 
 // @todo: Функция создания карточки
 export function createCard(
@@ -11,16 +13,17 @@ export function createCard(
   removeCardHandler,
   likeCardHandler,
   showCardImageHandler,
+  accountId,
 ) {
   const cardContentClone = cardContent.cloneNode(true);
-  cardContentClone
-    .querySelector('.card')
-    .setAttribute('data-id', `${card['_id']}`);
-  // console.log(card.likes.length);
-  cardContentClone.querySelector('.card__like-count').textContent =
-    card.likes.length;
+  cardContentClone.querySelector('.card').setAttribute('data-id', `${card['_id']}`);
+  cardContentClone.querySelector('.card__like-count').textContent = card.likes.length;
   cardContentClone.querySelector('.card__title').textContent = card.name;
-  cardContentClone.querySelector('.card__image').src = card.link;
+
+  // cardContentClone.querySelector('.card__image').src = card.link;
+  const cardCloneImg = cardContentClone.querySelector('.card__image');
+  getLink(card.link, ERROR_IMG_LINK).then((linkImg) => (cardCloneImg.src = linkImg));
+
   cardContentClone.querySelector(
     '.card__image',
   ).alt = `Фотография местности ${card.name}`;
@@ -36,20 +39,14 @@ export function createCard(
 
   cardContentClone
     .querySelector('.card__image')
-    .addEventListener('click', () =>
-      showCardImageHandler(card.name, card.link),
-    );
+    .addEventListener('click', () => showCardImageHandler(card.name, card.link));
 
   const likeButton = cardContentClone.querySelector('.card__like-button');
-  const isCardLiked = card.likes.some((user) => {
-    return user['_id'] === 'b1d9d2a8723cef39cda63569';
-  });
+  const isCardLiked = card.likes.some((user) => user['_id'] === accountId);
+  const isOwnerCard = card.owner['_id'] === accountId;
   if (isCardLiked) likeButton.classList.add('card__like-button_is-active');
+  if (!isOwnerCard) cardContentClone.querySelector('.card__delete-button').remove();
 
-  const isOwnerCard = card.owner['_id'] === 'b1d9d2a8723cef39cda63569';
-  if (!isOwnerCard) {
-    cardContentClone.querySelector('.card__delete-button').remove();
-  }
   return cardContentClone;
 }
 

@@ -3,6 +3,7 @@
 //   headers: {
 //     authorization: '14f77105-3b2d-422f-94c2-318e8127f8a3',
 //     'Content-Type': 'application/json',
+//     'Access-Control-Allow-Origin': '*',
 //   },
 // };
 
@@ -25,8 +26,7 @@ export async function fetchRequest(config, method, path, body) {
     .catch((error) => console.error(error));
 }
 
-export const getInitialCards = (config) =>
-  fetchRequest(config, 'GET', '/cards', null);
+export const getInitialCards = (config) => fetchRequest(config, 'GET', '/cards', null);
 
 export const pushAccountCredentials = (config, name, about) =>
   fetchRequest(config, 'PATCH', '/users/me', { name: name, about: about });
@@ -48,3 +48,12 @@ export const unlikePlace = (config, id) =>
 
 export const pushProfilePicture = (config, link) =>
   fetchRequest(config, 'PATCH', '/users/me/avatar', { avatar: link });
+
+export const getLink = async (link, placeHolderLink) => {
+  return fetch(link)
+    .then((resolve) => {
+      if (!resolve.ok) return placeHolderLink;
+      return resolve.url;
+    })
+    .catch(() => placeHolderLink);
+};

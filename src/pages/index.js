@@ -10,6 +10,9 @@ import {
   pushProfilePicture,
 } from '../components/api';
 
+// ID
+const ACC_ID = localStorage.getItem('ACC_ID_MESTO');
+
 // @todo: DOM узлы
 const placesList = document.querySelector('.places__list');
 
@@ -46,16 +49,8 @@ const popupAddLink = popupAddForm.link;
 const activeModalStyle = 'popup_is-opened';
 const animateModalStyle = 'popup_is-animated';
 
-// url 404 placeholder image
-const image404 =
-  'https://previews.123rf.com/images/krisckam/krisckam1307/krisckam130700312/20984907-404-error-file-not-found-illustration-vector.jpg';
-
 // list of elements to animate
-const listOfElementsToAnimate = [
-  popupTypeEdit,
-  popupTypeNewCard,
-  popupTypeImage,
-];
+const listOfElementsToAnimate = [popupTypeEdit, popupTypeNewCard, popupTypeImage];
 
 popupProfileForm.addEventListener('submit', (evt) =>
   handleEditFormSubmit(evt, popupTypeEdit),
@@ -94,32 +89,18 @@ function setCredentials() {
 }
 
 // add place with name and a link for image
-async function addPlace(name, link, modalNode) {
+function addPlace(name, link, modalNode, accountId) {
   console.log(name.value, link.value);
-  const initCardObj = {};
-  initCardObj.name = name.value;
-  initCardObj.link = await loadURL(link.value, image404)
-    .then((resolve) => {
-      if (!resolve.ok) return image404;
-      return resolve.url;
-    })
-    .catch(() => image404);
+  const initCardObj = { name: name.value, link: link.value };
   pushNewPlace(config, initCardObj.name, initCardObj.link)
     .then((data) => {
       console.log(data);
-      placesList.prepend(createCard(data, removeCard, likeCard, showCardImage));
+      placesList.prepend(
+        createCard(data, removeCard, likeCard, showCardImage, accountId),
+      );
     })
     .catch((error) => console.error(error))
     .finally(() => renderLoading(false, modalNode));
-}
-
-// URL fetch
-function loadURL(url, urlError) {
-  return new Promise((resolve, reject) => {
-    const res = fetch(url);
-    resolve(res);
-    reject(urlError);
-  });
 }
 
 // clearing inputs
@@ -132,7 +113,7 @@ function clearInputFields(name, link) {
 function handleAddFormSubmit(evt, modalNode) {
   evt.preventDefault();
   renderLoading(true, modalNode);
-  addPlace(popupAddName, popupAddLink, modalNode);
+  addPlace(popupAddName, popupAddLink, modalNode, ACC_ID);
   clearInputFields(popupAddName, popupAddLink);
   closeModal(activeModalStyle, modalNode, onKeyDown);
 }
@@ -143,17 +124,11 @@ function handleEditFormSubmit(evt, modalNode) {
   profileTitle.textContent = popupProfileName.value;
   profileDescription.textContent = popupProfileDescription.value;
   renderLoading(true, modalNode);
-  pushAccountCredentials(
-    config,
-    popupProfileName.value,
-    popupProfileDescription.value,
-  )
+  pushAccountCredentials(config, popupProfileName.value, popupProfileDescription.value)
     .catch((error) => console.error(error))
     .finally(() => renderLoading(false, modalNode));
   closeModal(activeModalStyle, modalNode, onKeyDown);
 }
-
-// const popupSubmitButton = document.querySelectorAll('.popup__button');
 
 function renderLoading(isLoading, modalElement) {
   const popupSubmitButton = modalElement.querySelector('.popup__button');
@@ -230,22 +205,25 @@ const validationConfig = {
 // validation
 enableValidation(validationConfig);
 
-// sync account pfp
+// set account pfp
 function setProfilePicture(config) {
   pushProfilePicture(
     config,
     'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Dasha_Nekrasova.jpg/800px-Dasha_Nekrasova.jpg',
   );
 }
-// setProfilePicture(config);
 
+// sync account data
 Promise.all([getAccountCredentials(config), getInitialCards(config)])
-  .then(([accauntData, cardsData]) => {
-    profileTitle.textContent = accauntData.name;
-    profileDescription.textContent = accauntData.about;
-    profilePicture.style.backgroundImage = `url(${accauntData.avatar})`;
+  .then(([accountData, cardsData]) => {
+    localStorage.setItem('ACC_ID_MESTO', accountData._id);
+    profileTitle.textContent = accountData.name;
+    profileDescription.textContent = accountData.about;
+    profilePicture.style.backgroundImage = `url(${accountData.avatar})`;
     cardsData.forEach((card) => {
-      placesList.append(createCard(card, removeCard, likeCard, showCardImage));
+      placesList.append(
+        createCard(card, removeCard, likeCard, showCardImage, accountData._id),
+      );
     });
   })
   .catch((error) => console.error(error));
