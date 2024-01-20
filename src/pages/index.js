@@ -123,9 +123,11 @@ function setCredentials() {
 
 // add place with name and a link for image
 function addPlace(name, link, modalNode, accountId) {
-  const initCardObj = { name: name.value, link: link.value };
+  const initCardObj = { name: name.value, link: link.value.trim() };
   pushNewPlace(REQUEST_CONFIG, initCardObj.name, initCardObj.link)
     .then((data) => {
+      clearInputFields(popupAddName, popupAddLink);
+      closeModal(activeModalStyle, modalNode, onKeyDown);
       placesList.prepend(
         createCard(data, removeCard, likeCard, showCardImage, accountId),
       );
@@ -146,8 +148,6 @@ function handleProfileFormSubmit(evt, modalNode) {
   evt.preventDefault();
   renderLoading(true, modalNode);
   setProfilePicture(REQUEST_CONFIG, modalNode);
-  clearInputFields(popupAddPictureLink);
-  closeModal(activeModalStyle, modalNode, onKeyDown);
 }
 
 // submit handler add card
@@ -155,26 +155,24 @@ function handleAddFormSubmit(evt, modalNode) {
   evt.preventDefault();
   renderLoading(true, modalNode);
   addPlace(popupAddName, popupAddLink, modalNode, ACC_ID);
-  clearInputFields(popupAddName, popupAddLink);
-  closeModal(activeModalStyle, modalNode, onKeyDown);
 }
 
 // submit handler edit profile
 function handleEditFormSubmit(evt, modalNode) {
   evt.preventDefault();
-  profileTitle.textContent = popupProfileName.value;
-  profileDescription.textContent = popupProfileDescription.value;
   renderLoading(true, modalNode);
   pushAccountCredentials(
     REQUEST_CONFIG,
     popupProfileName.value,
     popupProfileDescription.value,
   )
+    .then(() => {
+      profileTitle.textContent = popupProfileName.value;
+      profileDescription.textContent = popupProfileDescription.value;
+      closeModal(activeModalStyle, modalNode, onKeyDown);
+    })
     .catch((error) => console.error(error))
-    .finally(() => {
-      renderLoading(false, modalNode);
-    });
-  closeModal(activeModalStyle, modalNode, onKeyDown);
+    .finally(() => renderLoading(false, modalNode));
 }
 
 // Submit loading UX
@@ -248,13 +246,15 @@ enableValidation(VALIDATION_CONFIG);
 
 // set account pfp
 function setProfilePicture(config, modalNode) {
-  const link = popupAddPictureLink.value;
-  profilePicture.style.backgroundImage = `url(${link})`;
+  const link = popupAddPictureLink.value.trim();
   pushProfilePicture(config, link)
-    .catch((error) => console.error(error))
-    .finally(() => {
-      renderLoading(false, modalNode);
-    });
+    .then(() => {
+      profilePicture.style.backgroundImage = `url(${link}`;
+      closeModal(activeModalStyle, modalNode, onKeyDown);
+      clearInputFields(popupAddPictureLink);
+    })
+    .catch((error) => console.error(error, 'wrong link'))
+    .finally(() => renderLoading(false, modalNode));
 }
 
 // sync account data

@@ -9,11 +9,6 @@ export function fetchRequest(config, method, path, body) {
     if (resolve.ok) return resolve.json();
     return Promise.reject(`Error: ${resolve.status}`);
   });
-  // .catch((error) => {
-  //   console.error(error);
-  //   return Promise.reject(`Error: ${error.status}`);
-  // });
-  // .catch((error) => console.log(error))
 }
 
 export const getInitialCards = (config) => fetchRequest(config, 'GET', '/cards', null);

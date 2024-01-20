@@ -57,7 +57,6 @@ export function likeCard(evt, idCard) {
   if (!likeElement.classList.contains('card__like-button_is-active')) {
     likePlace(REQUEST_CONFIG, idCard)
       .then((data) => {
-        console.log(data);
         likeElement.classList.toggle('card__like-button_is-active');
         cardLikeCount.textContent = data.likes.length;
       })
@@ -65,7 +64,6 @@ export function likeCard(evt, idCard) {
   } else {
     unlikePlace(REQUEST_CONFIG, idCard)
       .then((data) => {
-        console.log(data);
         likeElement.classList.toggle('card__like-button_is-active');
         cardLikeCount.textContent = data.likes.length;
       })
