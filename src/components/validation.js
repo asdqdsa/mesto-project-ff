@@ -54,7 +54,10 @@ const toggleButtonState = (inputList, buttonElement, config) => {
 
 export const enableValidation = (config) => {
   const formList = Array.from(document.querySelectorAll(config.formSelector));
-  formList.forEach((form) => setEventListeners(form, config));
+  formList.forEach((form) => {
+    console.log(form);
+    return setEventListeners(form, config);
+  });
 };
 
 export const clearValidation = (form, config) => {

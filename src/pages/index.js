@@ -132,7 +132,7 @@ function addPlace(name, link, modalNode, accountId) {
     })
     .catch((error) => console.error(error))
     .finally(() => {
-      enableValidation(VALIDATION_CONFIG);
+      // enableValidation(VALIDATION_CONFIG);
       renderLoading(false, modalNode);
     });
 }
@@ -255,7 +255,7 @@ function setProfilePicture(config, modalNode) {
   pushProfilePicture(config, link)
     .catch((error) => console.error(error))
     .finally(() => {
-      enableValidation(VALIDATION_CONFIG);
+      // enableValidation(VALIDATION_CONFIG);
       renderLoading(false, modalNode);
     });
 }
