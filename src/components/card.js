@@ -1,7 +1,7 @@
 import { REQUEST_CONFIG } from '../pages/index';
 import { removePlace, likePlace, unlikePlace, getLink } from './api';
 
-// @todo: Темплейт карточки
+// Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
 const cardContent = cardTemplate.content;
 
@@ -9,7 +9,7 @@ const cardContent = cardTemplate.content;
 const ERROR_IMG_LINK =
   'https://previews.123rf.com/images/krisckam/krisckam1307/krisckam130700312/20984907-404-error-file-not-found-illustration-vector.jpg';
 
-// @todo: Функция создания карточки
+// Функция создания карточки
 export function createCard(
   card,
   removeCardHandler,
@@ -18,7 +18,6 @@ export function createCard(
   accountId,
 ) {
   const cardContentClone = cardContent.cloneNode(true);
-  cardContentClone.querySelector('.card').setAttribute('data-id', `${card['_id']}`);
   cardContentClone.querySelector('.card__like-count').textContent = card.likes.length;
   cardContentClone.querySelector('.card__title').textContent = card.name;
 
@@ -31,19 +30,22 @@ export function createCard(
 
   cardContentClone
     .querySelector('.card__delete-button')
-    .addEventListener('click', (evt) => removeCardHandler(evt));
+    .addEventListener('click', (evt) => removeCardHandler(evt, card['_id']));
 
   cardContentClone
     .querySelector('.card__like-button')
-    .addEventListener('click', (evt) => likeCardHandler(evt));
+    .addEventListener('click', (evt) => likeCardHandler(evt, card['_id']));
 
   cardContentClone
     .querySelector('.card__image')
     .addEventListener('click', () => showCardImageHandler(card.name, card.link));
 
+  // check card holder
   const likeButton = cardContentClone.querySelector('.card__like-button');
   const isCardLiked = card.likes.some((user) => user['_id'] === accountId);
   const isOwnerCard = card.owner['_id'] === accountId;
+
+  // set owner like-icon, remove-icon
   if (isCardLiked) likeButton.classList.add('card__like-button_is-active');
   if (!isOwnerCard) cardContentClone.querySelector('.card__delete-button').remove();
 
@@ -51,26 +53,34 @@ export function createCard(
 }
 
 // handle liking card
-export function likeCard(evt) {
-  evt.target.classList.toggle('card__like-button_is-active');
+export function likeCard(evt, idCard) {
+  const likeElement = evt.target;
   const card = evt.target.closest('.card');
-  const cardId = card.dataset.id;
   const cardLikeCount = card.querySelector('.card__like-count');
-  if (evt.target.classList.contains('card__like-button_is-active')) {
-    likePlace(REQUEST_CONFIG, cardId).then((data) => {
-      cardLikeCount.textContent = data.likes.length;
-    });
+  if (!likeElement.classList.contains('card__like-button_is-active')) {
+    likePlace(REQUEST_CONFIG, idCard)
+      .then((data) => {
+        likeElement.classList.toggle('card__like-button_is-active');
+        cardLikeCount.textContent = data.likes.length;
+      })
+      .catch((err) => err);
   } else {
-    unlikePlace(REQUEST_CONFIG, cardId).then((data) => {
-      cardLikeCount.textContent = data.likes.length;
-    });
+    unlikePlace(REQUEST_CONFIG, idCard)
+      .then((data) => {
+        likeElement.classList.toggle('card__like-button_is-active');
+        cardLikeCount.textContent = data.likes.length;
+      })
+      .catch((err) => err);
   }
 }
 
-// @todo: Функция удаления карточки
-export function removeCard(evt) {
+// Функция удаления карточки
+export function removeCard(evt, idCard) {
   const card = evt.target.closest('.card');
-  const idCard = card.dataset.id;
-  removePlace(REQUEST_CONFIG, idCard);
-  card.remove();
+  removePlace(REQUEST_CONFIG, idCard)
+    .then((data) => {
+      card.remove();
+      console.log(data.message);
+    })
+    .catch((error) => error);
 }

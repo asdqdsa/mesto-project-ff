@@ -38,9 +38,7 @@ const setEventListeners = (formElement, config) => {
   });
 };
 
-const hasInvalidInput = (inputList) => {
-  return inputList.some((input) => !input.validity.valid);
-};
+const hasInvalidInput = (inputList) => inputList.some((input) => !input.validity.valid);
 
 const toggleButtonState = (inputList, buttonElement, config) => {
   if (hasInvalidInput(inputList)) {
@@ -59,5 +57,9 @@ export const enableValidation = (config) => {
 
 export const clearValidation = (form, config) => {
   const inputList = Array.from(form.querySelectorAll(config.inputSelector));
-  inputList.forEach((input) => hideInputError(form, input, config));
+  const buttonElement = form.querySelector(config.buttonSelector);
+  inputList.forEach((input) => {
+    hideInputError(form, input, config);
+    toggleButtonState(inputList, buttonElement, config);
+  });
 };

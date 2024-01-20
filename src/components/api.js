@@ -1,16 +1,14 @@
 // fetch fn
-export async function fetchRequest(config, method, path, body) {
+export function fetchRequest(config, method, path, body) {
   const request = {
     method: method,
     headers: config.headers,
   };
   if (body != null) request.body = JSON.stringify(body);
-  return fetch(`${config.baseUrl}${path}`, request)
-    .then((resolve) => {
-      if (resolve.ok) return resolve.json();
-      return Promise.reject(`Error: ${resolve.status}`);
-    })
-    .catch((error) => console.error(error));
+  return fetch(`${config.baseUrl}${path}`, request).then((resolve) => {
+    if (resolve.ok) return resolve.json();
+    return Promise.reject(`Error: ${resolve.status}`);
+  });
 }
 
 export const getInitialCards = (config) => fetchRequest(config, 'GET', '/cards', null);
@@ -36,7 +34,7 @@ export const unlikePlace = (config, id) =>
 export const pushProfilePicture = (config, link) =>
   fetchRequest(config, 'PATCH', '/users/me/avatar', { avatar: link });
 
-export const getLink = async (link, placeHolderLink) => {
+export const getLink = (link, placeHolderLink) => {
   return fetch(link)
     .then((resolve) => {
       if (!resolve.ok) return placeHolderLink;
