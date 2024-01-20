@@ -1,7 +1,7 @@
 import { REQUEST_CONFIG } from '../pages/index';
 import { removePlace, likePlace, unlikePlace, getLink } from './api';
 
-// @todo: Темплейт карточки
+// Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
 const cardContent = cardTemplate.content;
 
@@ -9,7 +9,7 @@ const cardContent = cardTemplate.content;
 const ERROR_IMG_LINK =
   'https://previews.123rf.com/images/krisckam/krisckam1307/krisckam130700312/20984907-404-error-file-not-found-illustration-vector.jpg';
 
-// @todo: Функция создания карточки
+// Функция создания карточки
 export function createCard(
   card,
   removeCardHandler,
@@ -40,9 +40,12 @@ export function createCard(
     .querySelector('.card__image')
     .addEventListener('click', () => showCardImageHandler(card.name, card.link));
 
+  // check card holder
   const likeButton = cardContentClone.querySelector('.card__like-button');
   const isCardLiked = card.likes.some((user) => user['_id'] === accountId);
   const isOwnerCard = card.owner['_id'] === accountId;
+
+  // set owner like-icon, remove-icon
   if (isCardLiked) likeButton.classList.add('card__like-button_is-active');
   if (!isOwnerCard) cardContentClone.querySelector('.card__delete-button').remove();
 
@@ -71,10 +74,13 @@ export function likeCard(evt, idCard) {
   }
 }
 
-// @todo: Функция удаления карточки
+// Функция удаления карточки
 export function removeCard(evt, idCard) {
   const card = evt.target.closest('.card');
   removePlace(REQUEST_CONFIG, idCard)
-    .then(() => card.remove())
+    .then((data) => {
+      card.remove();
+      console.log(data.message);
+    })
     .catch((error) => error);
 }

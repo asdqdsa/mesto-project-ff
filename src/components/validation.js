@@ -38,12 +38,7 @@ const setEventListeners = (formElement, config) => {
   });
 };
 
-const hasInvalidInput = (inputList) => {
-  return inputList.some((input) => {
-    console.log(input.validity.valid);
-    return !input.validity.valid;
-  });
-};
+const hasInvalidInput = (inputList) => inputList.some((input) => !input.validity.valid);
 
 const toggleButtonState = (inputList, buttonElement, config) => {
   if (hasInvalidInput(inputList)) {
@@ -57,17 +52,14 @@ const toggleButtonState = (inputList, buttonElement, config) => {
 
 export const enableValidation = (config) => {
   const formList = Array.from(document.querySelectorAll(config.formSelector));
-  formList.forEach((form) => {
-    console.log(form);
-    setEventListeners(form, config);
-  });
+  formList.forEach((form) => setEventListeners(form, config));
 };
 
 export const clearValidation = (form, config) => {
   const inputList = Array.from(form.querySelectorAll(config.inputSelector));
+  const buttonElement = form.querySelector(config.buttonSelector);
   inputList.forEach((input) => {
-    console.log(input, 'cleared');
     hideInputError(form, input, config);
-    setEventListeners(form, config);
+    toggleButtonState(inputList, buttonElement, config);
   });
 };

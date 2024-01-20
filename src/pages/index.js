@@ -32,7 +32,7 @@ const VALIDATION_CONFIG = {
   errorElementClass: 'popup__input-error_active',
 };
 
-// @todo: DOM узлы
+// DOM узлы
 const placesList = document.querySelector('.places__list');
 
 // profile Nodes
@@ -84,10 +84,9 @@ const listOfElementsToAnimate = [
 
 // popup submit listeners
 // submit profile-picture
-popupProfilePictureForm.addEventListener('submit', (evt) => {
-  handleProfileFormSubmit(evt, popupTypeProfile);
-  clearValidation(popupProfilePictureForm, VALIDATION_CONFIG);
-});
+popupProfilePictureForm.addEventListener('submit', (evt) =>
+  handleProfileFormSubmit(evt, popupTypeProfile),
+);
 
 // submit profile-info
 popupProfileInfoForm.addEventListener('submit', (evt) => {
@@ -96,10 +95,9 @@ popupProfileInfoForm.addEventListener('submit', (evt) => {
 });
 
 // submit add-place
-popupAddForm.addEventListener('submit', (evt) => {
-  handleAddFormSubmit(evt, popupTypeNewCard);
-  clearValidation(popupAddForm, VALIDATION_CONFIG);
-});
+popupAddForm.addEventListener('submit', (evt) =>
+  handleAddFormSubmit(evt, popupTypeNewCard),
+);
 
 // add styles to the list of elements
 function addStyleToElements(listOfElements, styleClass) {
@@ -123,22 +121,20 @@ function setCredentials() {
 
 // add place with name and a link for image
 function addPlace(name, link, modalNode, accountId) {
-  const initCardObj = { name: name.value, link: link.value.trim() };
-  pushNewPlace(REQUEST_CONFIG, initCardObj.name, initCardObj.link)
+  pushNewPlace(REQUEST_CONFIG, name.value, link.value.trim())
     .then((data) => {
       clearInputFields(popupAddName, popupAddLink);
       closeModal(activeModalStyle, modalNode, onKeyDown);
+      clearValidation(popupAddForm, VALIDATION_CONFIG);
       placesList.prepend(
         createCard(data, removeCard, likeCard, showCardImage, accountId),
       );
     })
     .catch((error) => console.error(error))
-    .finally(() => {
-      renderLoading(false, modalNode);
-    });
+    .finally(() => renderLoading(false, modalNode));
 }
 
-// clearing inputs
+// clear given inputs
 function clearInputFields(...inputs) {
   inputs.forEach((input) => (input.value = ''));
 }
@@ -147,7 +143,10 @@ function clearInputFields(...inputs) {
 function handleProfileFormSubmit(evt, modalNode) {
   evt.preventDefault();
   renderLoading(true, modalNode);
-  setProfilePicture(REQUEST_CONFIG, modalNode);
+  setProfilePicture(REQUEST_CONFIG, modalNode)
+    .then(() => clearValidation(popupProfilePictureForm, VALIDATION_CONFIG))
+    .catch((error) => error)
+    .finally(() => renderLoading(false, modalNode));
 }
 
 // submit handler add card
@@ -155,6 +154,7 @@ function handleAddFormSubmit(evt, modalNode) {
   evt.preventDefault();
   renderLoading(true, modalNode);
   addPlace(popupAddName, popupAddLink, modalNode, ACC_ID);
+  clearValidation(popupAddForm, VALIDATION_CONFIG);
 }
 
 // submit handler edit profile
@@ -166,16 +166,17 @@ function handleEditFormSubmit(evt, modalNode) {
     popupProfileName.value,
     popupProfileDescription.value,
   )
-    .then(() => {
-      profileTitle.textContent = popupProfileName.value;
-      profileDescription.textContent = popupProfileDescription.value;
+    .then((data) => {
+      console.log(data);
+      profileTitle.textContent = data.name;
+      profileDescription.textContent = data.about;
       closeModal(activeModalStyle, modalNode, onKeyDown);
     })
     .catch((error) => console.error(error))
     .finally(() => renderLoading(false, modalNode));
 }
 
-// Submit loading UX
+// submit loading UX
 function renderLoading(isLoading, modalElement) {
   const popupSubmitButton = modalElement.querySelector('.popup__button');
   if (isLoading) {
@@ -210,6 +211,7 @@ profilePicture.addEventListener('click', () => {
 
 //  open edit modal
 profileEditBtn.addEventListener('click', () => {
+  openModal(activeModalStyle, popupTypeEdit, onKeyDown);
   clearValidation(popupProfileInfoForm, VALIDATION_CONFIG);
   setCredentials();
   openModal(activeModalStyle, popupTypeEdit, onKeyDown);
@@ -222,24 +224,24 @@ profileAddBtn.addEventListener('click', () => {
 
 // close modal EventListeners
 // profile pfp close modal
-popupTypeProfile.addEventListener('click', (evt) =>
-  handleCloseModal(evt, popupTypeProfile, popupProfileCloseBtn),
-);
+popupTypeProfile.addEventListener('click', (evt) => {
+  handleCloseModal(evt, popupTypeProfile, popupProfileCloseBtn);
+});
 
 // profile description close modal
-popupTypeEdit.addEventListener('click', (evt) =>
-  handleCloseModal(evt, popupTypeEdit, popupEditCloseBtn),
-);
+popupTypeEdit.addEventListener('click', (evt) => {
+  handleCloseModal(evt, popupTypeEdit, popupEditCloseBtn);
+});
 
 // add card close modal
-popupTypeNewCard.addEventListener('click', (evt) =>
-  handleCloseModal(evt, popupTypeNewCard, popupAddCloseBtn),
-);
+popupTypeNewCard.addEventListener('click', (evt) => {
+  handleCloseModal(evt, popupTypeNewCard, popupAddCloseBtn);
+});
 
 // image card close modal
-popupTypeImage.addEventListener('click', (evt) =>
-  handleCloseModal(evt, popupTypeImage, popupImageCloseBtn),
-);
+popupTypeImage.addEventListener('click', (evt) => {
+  handleCloseModal(evt, popupTypeImage, popupImageCloseBtn);
+});
 
 // validation
 enableValidation(VALIDATION_CONFIG);
@@ -247,27 +249,26 @@ enableValidation(VALIDATION_CONFIG);
 // set account pfp
 function setProfilePicture(config, modalNode) {
   const link = popupAddPictureLink.value.trim();
-  pushProfilePicture(config, link)
-    .then(() => {
-      profilePicture.style.backgroundImage = `url(${link}`;
-      closeModal(activeModalStyle, modalNode, onKeyDown);
+  return pushProfilePicture(config, link)
+    .then((data) => {
+      profilePicture.style.backgroundImage = `url(${data.avatar}`;
       clearInputFields(popupAddPictureLink);
+      closeModal(activeModalStyle, modalNode, onKeyDown);
     })
-    .catch((error) => console.error(error, 'wrong link'))
-    .finally(() => renderLoading(false, modalNode));
+    .catch((error) => console.log(error));
 }
 
-// sync account data
+// sync account data, get id, get cards, render cards
 Promise.all([getAccountCredentials(REQUEST_CONFIG), getInitialCards(REQUEST_CONFIG)])
   .then(([accountData, cardsData]) => {
-    localStorage.setItem('ACC_ID_MESTO', accountData._id);
+    localStorage.setItem('ACC_ID_MESTO', accountData['_id']);
     profileTitle.textContent = accountData.name;
     profileDescription.textContent = accountData.about;
     profilePicture.style.backgroundImage = `url(${accountData.avatar})`;
     cardsData.forEach((card) => {
       placesList.append(
-        createCard(card, removeCard, likeCard, showCardImage, accountData._id),
+        createCard(card, removeCard, likeCard, showCardImage, accountData['_id']),
       );
     });
   })
-  .catch((error) => console.error(error));
+  .catch((error) => error);
