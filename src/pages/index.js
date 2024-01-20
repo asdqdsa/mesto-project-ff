@@ -167,7 +167,6 @@ function handleEditFormSubmit(evt, modalNode) {
     popupProfileDescription.value,
   )
     .then((data) => {
-      console.log(data);
       profileTitle.textContent = data.name;
       profileDescription.textContent = data.about;
       closeModal(activeModalStyle, modalNode, onKeyDown);
