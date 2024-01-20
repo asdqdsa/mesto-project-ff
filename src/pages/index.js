@@ -132,7 +132,6 @@ function addPlace(name, link, modalNode, accountId) {
     })
     .catch((error) => console.error(error))
     .finally(() => {
-      // enableValidation(VALIDATION_CONFIG);
       renderLoading(false, modalNode);
     });
 }
@@ -208,7 +207,6 @@ function handleCloseModal(evt, modalNode, closeBtnNode) {
 // open modal EventListeners
 // open pfp modal
 profilePicture.addEventListener('click', () => {
-  clearValidation(popupProfileInfoForm, VALIDATION_CONFIG);
   openModal(activeModalStyle, popupTypeProfile, onKeyDown);
 });
 
@@ -255,7 +253,6 @@ function setProfilePicture(config, modalNode) {
   pushProfilePicture(config, link)
     .catch((error) => console.error(error))
     .finally(() => {
-      // enableValidation(VALIDATION_CONFIG);
       renderLoading(false, modalNode);
     });
 }
