@@ -38,7 +38,7 @@
 .popup__image{display:block;max-height:100%;max-width:100%;-o-object-fit:cover;object-fit:cover}
 .popup__input-error{border-bottom:1px solid red}
 .popup__input-error_active{color:red;display:flex;font-size:12px;font-style:normal;font-weight:400;line-height:normal;word-wrap:break-word}
-.popup__button_is-inactive{background:#000c}
+.popup__button_is-inactive{background-color:transparent;border:1px solid #000;color:#000;opacity:.2}.popup__button_is-inactive:hover{background-color:transparent;cursor:default}
 .popup__content_content_profile{min-height:272px}
 .popup{align-items:center;background-color:rgba(0,0,0,.5);bottom:0;display:none;font-family:Inter,Arial,sans-serif;justify-content:center;left:0;position:fixed;right:0;top:0;z-index:10}
 .popup_is-animated{display:flex;opacity:0;pointer-events:none;transition:visibility 0s .6s,opacity .6s;-webkit-user-select:none;-moz-user-select:none;user-select:none;visibility:hidden}
